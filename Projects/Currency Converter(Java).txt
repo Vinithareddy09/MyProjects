@@ -1,0 +1,94 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.Scanner;
+
+public class CurrencyConverter {
+
+    // Your actual API key
+    private static final String API_KEY = "bb060b92ddd3c1a5c38f0a4f";
+    private static final String API_URL = "https://v6.exchangerate-api.com/v6/" + API_KEY + "/latest/";
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        DecimalFormat df = new DecimalFormat("0.00");
+
+        System.out.println("Welcome to the Currency Converter!");
+        System.out.println("Supported currencies include USD, INR, EUR, GBP, JPY, and many more.");
+
+        // Get user inputs
+        System.out.print("Enter the base currency (e.g., USD): ");
+        String baseCurrency = scanner.next().toUpperCase();
+
+        System.out.print("Enter the target currency (e.g., INR): ");
+        String targetCurrency = scanner.next().toUpperCase();
+
+        System.out.print("Enter the amount to convert: ");
+        double amount = scanner.nextDouble();
+
+        try {
+            // Fetch the exchange rate
+            double exchangeRate = getExchangeRate(baseCurrency, targetCurrency);
+
+            if (exchangeRate != -1) {
+                // Perform the conversion
+                double convertedAmount = amount * exchangeRate;
+                System.out.println("Exchange Rate: 1 " + baseCurrency + " = " + df.format(exchangeRate) + " " + targetCurrency);
+                System.out.println("Converted Amount: " + df.format(convertedAmount) + " " + targetCurrency);
+            } else {
+                System.out.println("Conversion failed. Please check the currency codes or API key.");
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
+        }
+
+        scanner.close();
+    }
+
+    // Function to fetch the exchange rate from the API
+    private static double getExchangeRate(String baseCurrency, String targetCurrency) {
+        try {
+            // Build the API URL with the base currency
+            String urlStr = API_URL + baseCurrency;
+
+            // Make HTTP GET request
+            URL url = new URL(urlStr);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == 200) { // Success
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+                reader.close();
+
+                // Extract the exchange rate using string manipulation
+                String responseStr = response.toString();
+                String targetRateKey = "\"" + targetCurrency + "\":";
+                int startIndex = responseStr.indexOf(targetRateKey);
+                if (startIndex != -1) {
+                    int endIndex = responseStr.indexOf(",", startIndex);
+                    if (endIndex == -1) {
+                        endIndex = responseStr.indexOf("}", startIndex);
+                    }
+                    String rateStr = responseStr.substring(startIndex + targetRateKey.length(), endIndex).trim();
+                    return Double.parseDouble(rateStr);
+                } else {
+                    System.out.println("Target currency not found in API response.");
+                }
+            } else {
+                System.out.println("Error: Received HTTP response code " + responseCode);
+            }
+        } catch (Exception e) {
+            System.out.println("Error while fetching exchange rate: " + e.getMessage());
+        }
+        return -1; // Return -1 if an error occurs
+    }
+}

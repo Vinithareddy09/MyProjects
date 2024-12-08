@@ -1,0 +1,185 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'To-Do List with Notifications',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: TodoListScreen(),
+    );
+  }
+}
+
+class TodoListScreen extends StatefulWidget {
+  @override
+  _TodoListScreenState createState() => _TodoListScreenState();
+}
+
+class _TodoListScreenState extends State<TodoListScreen> {
+  final TextEditingController _taskController = TextEditingController();
+  final List<String> _tasks = [];
+
+  // Function to show the notification
+  void _showNotification(String task) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('Task Reminder'),
+        content: Text('It\'s time for: $task'),
+      ),
+    );
+  }
+
+  // Function to schedule notification
+  void _scheduleNotification(String task, DateTime time) {
+    final timeDifference = time.difference(DateTime.now());
+
+    if (timeDifference.isNegative) {
+      // Handle case where time is in the past
+      _showErrorDialog('Invalid Time', 'Please select a future time for the reminder.');
+      return;
+    }
+
+    // Use Timer to delay showing the notification until the specified time
+    Timer(timeDifference, () {
+      _showNotification(task);
+    });
+
+    // Show confirmation dialog
+    _showConfirmationDialog('Reminder Set', 'Your reminder for "$task" is set.');
+  }
+
+  // Add task to list
+  void _addTask() {
+    if (_taskController.text.isEmpty) return;
+    setState(() {
+      _tasks.add(_taskController.text);
+    });
+    _taskController.clear();
+  }
+
+  // Function to set task reminder
+  void _setTaskReminder(String task) {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    ).then((selectedDate) {
+      if (selectedDate != null) {
+        showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.now(),
+        ).then((selectedTime) {
+          if (selectedTime != null) {
+            final reminderTime = DateTime(
+              selectedDate.year,
+              selectedDate.month,
+              selectedDate.day,
+              selectedTime.hour,
+              selectedTime.minute,
+            );
+            _scheduleNotification(task, reminderTime);
+          }
+        });
+      }
+    });
+  }
+
+  // Function to show an error dialog
+  void _showErrorDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Function to show confirmation dialog
+  void _showConfirmationDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('To-Do List with Notifications'),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _taskController,
+                    decoration: InputDecoration(labelText: 'Enter task'),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: _addTask,
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _tasks.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(_tasks[index]),
+                  trailing: IconButton(
+                    icon: Icon(Icons.notifications),
+                    onPressed: () => _setTaskReminder(_tasks[index]),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _taskController.dispose();
+    super.dispose();
+  }
+}

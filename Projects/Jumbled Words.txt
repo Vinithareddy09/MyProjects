@@ -1,0 +1,63 @@
+import random
+#pip install pywebio
+from pywebio.input import *
+from pywebio.output import *
+
+total = 0
+pp1 = 0
+turn = 0
+p1name = input("Hey! Please enter your name: ", type=TEXT)
+
+def choose():
+	words = ['notebook', 'computer', 'science', 'programming', 'mathematics', 'straight', 'reptilian', 'reverse',
+			'juice', 'board', 'calibre', 'something', 'hazard', 'hesitation', 'trouble', 'happiness', 'sprinkle']
+	pick = random.choice(words)
+	return pick
+def jumble(word):
+    random_words=random.sample(word,len(word))
+    jumbled=''.join(random_words)
+    return jumbled
+#Snippet 2:
+# Function for showing final score.
+def thank(p1n, p1, total):
+	if p1 == total:  #all correct answers
+		put_text("\n",p1n+ ', your score is :', p1,'/',total).style('color: #3e8a12; font-size: 18px')
+		put_text('You seem to be a genius! Well done!').style('color: #fcba03; font-size: 18px')
+	if total>3:  #at least more than 3 words played
+		if p1 == (total - 1):
+			put_text("\n",p1n+ ', your score is :', p1,'/',total).style('color: #3e8a12; font-size: 18px')
+			put_text('Ahh just short by 1! On your way to being a genius!').style('color: #fcba03; font-size: 18px')
+		else:
+			put_text("\n",p1n+ ', your score is :', p1,'/',total).style('color: #3e8a12; font-size: 18px')
+			put_text('Thanks for playing!').style('color: #fcba03; font-size: 18px')
+	else:
+		put_text("\n",p1n+ ', your score is :', p1,'/',total).style('color: #3e8a12; font-size: 18px')
+		put_text('Thanks for playing!').style('color: #fcba03; font-size: 18px')
+def play():
+    global total,pp1,turn,flag
+    flag=0
+    encourage=['great! next up...','well done !coming up next...','great effort!next up...','superb!coming']
+for i in range (0,7):
+        total+=1
+        picked_word=choose()
+        qn=jumble(picked_word)
+        put_text("your challenge:..",qn)
+        ans=input("your answer:..",type=TEXT)
+#Snippet 3: if statement to check correct answers in function 'play()'
+        if ans == picked_word:
+	        pp1+=1
+	        e = random.choice(e)
+	        put_text("\n"+e+"\n").style('color: #02639c;font-size: 18px')
+        else:
+            put_text("uh oh!better luck next time...\nThe correct answer is:"+picked_word).style('color:#fc0303;font-size:18px')
+            c=input("press 1 to continue and 0 to quit:",type=NUMBER)
+            if c==0:
+                thank(p1name,pp1,total)
+                flag=1
+                break
+if flag==0:
+    cont=input("\n do you want to continue playing?(YES/NO)",type=TEXT)
+if cont.lower()=='yes':
+    play()
+play()
+

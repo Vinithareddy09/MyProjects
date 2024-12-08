@@ -1,0 +1,110 @@
+# Importing libraries
+from nltk.chat.util import Chat, reflections
+from datetime import datetime
+
+# Creating a list of responses
+responses = [
+    [
+        r"(hi|hey|hello|hola|holla)(.*)",
+        ["Hello! How can Vision assist you today?", "Hi there! What can Vision do for you?", "Hey! How can Vision help?"]
+    ],
+    [
+        r"(.*) your name?",
+        ["My name is Vision and I'm a chatbot. Vision stands for Virtual Intelligent Support for Integrated Operational Needs."]
+    ],
+    [
+        r"(.)help(.)",
+        ["Of course! What do you need help with?", "Sure, Vision is here to help. What do you need?", "What can Vision assist you with today?"]
+    ],
+    [
+        r"how are you (.*) ?",
+        ["I am great!", "I am fine.", "I am good."]
+    ],
+    [
+        r"sorry (.*)",
+        ["It's alright", "It's OK, never mind that"]
+    ],
+    [
+        r"quit",
+        ["Goodbye! Have a great day!", "Bye! Take care!", "See you later! Let me know if you need anything else."]
+    ],
+    [
+        r"(.)(weather|forecast)(.)",
+        ["Let Vision check the weather for you.", "Here's the weather forecast for today.", "It looks like it's going to be [weather_condition] today."]
+    ],
+    [
+        r"what time is it|tell me the time|current time|what's the time now|time please",
+        ["The current time is [current_time].", "It's [current_time] now.", "Right now, it's [current_time]."]
+    ],
+    [
+        r"set a reminder|remind me to (.)|create a reminder|can you remind me to (.)|i need a reminder for (.*)",
+        ["Sure, Vision can set a reminder for you. What would you like to be reminded about?", "Reminder set for [task].", "Vision will remind you to [task]."]
+    ],
+    [
+        r"play some music|can you play a song|play (.)|i want to listen to (.)|put on some music",
+        ["Playing [song_name].", "Here's some music for you.", "Starting the song [song_name]."]
+    ],
+    [
+        r"what's the news|tell me the latest news|news update|current news|what's happening in the world",
+        ["Here's the latest news.", "These are the top headlines right now.", "Let Vision update you with the current news."]
+    ],
+    [
+        r"tell me a joke|i want to hear a joke|do you know any jokes|make me laugh|give me a joke",
+        ["Why don't scientists trust atoms? Because they make up everything!", "I told my computer I needed a break, and now it won’t stop sending me Kit-Kats.", "Why did the scarecrow win an award? Because he was outstanding in his field!"]
+    ],
+    [
+        r"what can you do|tell me your capabilities|what are your functions|what services do you provide|what can Vision help with",
+        ["Vision can assist with various tasks such as checking the weather, setting reminders, playing music, providing news updates, and much more.", "I am capable of answering questions, managing your schedule, fetching the latest news, playing your favorite tunes, and a lot more.", "From weather updates to playing music, Vision is here to help with all your needs."]
+    ],
+    [
+        r"tell me a fun fact|give me an interesting fact|i want to know something interesting|share a fun fact|do you know any interesting facts",
+        ["Did you know that honey never spoils? Archaeologists have found pots of honey in ancient Egyptian tombs that are over 3,000 years old and still edible.", "Octopuses have three hearts: one pumps blood around the body, while the other two pump it to the gills.", "A day on Venus is longer than a year on Venus. It takes about 243 Earth days to rotate once, but only about 225 Earth days to orbit the Sun."]
+    ],
+    [
+        r"what are you|who created you|tell me about yourself|what is Vision|are you an AI",
+        ["I am Vision, an AI assistant designed to help you with a variety of tasks. My full name is Virtual Intelligent Support for Integrated Operational Needs.", "Vision stands for Virtual Intelligent Support for Integrated Operational Needs, and I am here to assist you with everything from reminders to information retrieval.", "I am an AI assistant created to provide support and information. You can think of me as your digital helper for everyday tasks."]
+    ],
+    [
+        r"do you have feelings|are you alive|can you think|do you have a personality|are you a robot",
+        ["I don't have feelings or consciousness, but I'm designed to assist you as effectively as possible.", "I'm not alive, but I can perform a wide range of tasks to make your life easier.", "I don't think or feel like a human, but I use advanced algorithms to understand and respond to your requests."]
+    ],
+    [
+        r"who programmed you|who developed you|who created you|who is your developer|who built you",
+        ["I was developed by Wreckers.", "Wreckers programmed me to assist you.", "I was created by the team at Wreckers.", "Wreckers is the developer behind Vision."]
+    ],
+    [
+        r"where is your body|do you have a body|what do you look like|show me your body|do you have a physical form",
+        ["I am a program without a form.", "I don't have a physical body; I'm just software.", "As an AI, I exist only in the digital realm and don't have a physical form."]
+    ],
+    [
+        r"(.*)",
+        ["That is nice to hear", "Interesting!", "I see.", "Tell me more."]
+    ],
+]
+
+# Function to replace placeholders with dynamic content
+def dynamic_response(response):
+    current_time = datetime.now().strftime("%H:%M")
+    response = response.replace("[current_time]", current_time)
+    return response
+
+# Default message
+print("Hi, I'm Vision, your Virtual Intelligent Support for Integrated Operational Needs. \nPlease type your query. Type 'quit' to leave.")
+
+# Creating Chat Bot
+chat = Chat(responses, reflections)
+
+# Starting chat session
+def start_chat():
+    user_input = ''
+    while user_input.lower() != 'quit':
+        user_input = input("> ")
+        response = chat.respond(user_input)
+        if response:
+            response = dynamic_response(response)
+            print(response)
+        else:
+            print("I'm not sure how to respond to that. Can you rephrase?")
+
+# Run the chat
+start_chat()
