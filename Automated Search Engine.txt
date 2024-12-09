@@ -1,11 +1,11 @@
 import requests
 
 # API Key and Search Engine ID
-API_KEY = "AIzaSyDOx1S34wp_SevBMwCMRPDIp3y8ygYxVnU"
-SEARCH_ENGINE_ID = "825692c270c454e53"
+API_KEY = "YOUR_API_KEY"
+SEARCH_ENGINE_ID = "YOUR_SEARCH_ENGINE_ID"
 
 # Base URL for Google Custom Search
-url = 'https://www.googleapis.com/customsearch/v1'
+url = 'YOUR_URL'
 
 
 # Function to perform the search
@@ -86,5 +86,5 @@ def main():
             print("Invalid choice. Please enter an option between 1 and 3.")
 
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     main()
